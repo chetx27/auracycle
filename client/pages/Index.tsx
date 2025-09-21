@@ -2,16 +2,36 @@ import { DemoResponse } from "@shared/api";
 import { useEffect, useState } from "react";
 
 import { useMemo, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar as DayPickerCalendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarDays, Heart, Droplets, Sparkles } from "lucide-react";
-import { format, addDays, isSameDay, isBefore, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, differenceInCalendarDays } from "date-fns";
+import {
+  format,
+  addDays,
+  isSameDay,
+  isBefore,
+  addMonths,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  differenceInCalendarDays,
+} from "date-fns";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 
 interface TrackerSettings {
@@ -25,19 +45,32 @@ interface DailyLog {
   cramps: number; // 0-3
 }
 
-function iso(date: Date) { return format(date, "yyyy-MM-dd"); }
-function parseIso(d: string) { const [y,m,dd]=d.split("-").map(Number); return new Date(y, m-1, dd); }
+function iso(date: Date) {
+  return format(date, "yyyy-MM-dd");
+}
+function parseIso(d: string) {
+  const [y, m, dd] = d.split("-").map(Number);
+  return new Date(y, m - 1, dd);
+}
 
 export default function Index() {
-  const [settings, setSettings] = useLocalStorage<TrackerSettings>("aura:settings", {
-    lastPeriodStart: null,
-    cycleLength: 28,
-    periodLength: 5,
-  });
-  const [logs, setLogs] = useLocalStorage<Record<string, DailyLog>>("aura:logs", {});
+  const [settings, setSettings] = useLocalStorage<TrackerSettings>(
+    "aura:settings",
+    {
+      lastPeriodStart: null,
+      cycleLength: 28,
+      periodLength: 5,
+    },
+  );
+  const [logs, setLogs] = useLocalStorage<Record<string, DailyLog>>(
+    "aura:logs",
+    {},
+  );
   const today = new Date();
 
-  const lastStart = settings.lastPeriodStart ? parseIso(settings.lastPeriodStart) : null;
+  const lastStart = settings.lastPeriodStart
+    ? parseIso(settings.lastPeriodStart)
+    : null;
   const cycleLen = Math.max(20, Math.min(60, settings.cycleLength));
   const periodLen = Math.max(2, Math.min(10, settings.periodLength));
 
@@ -51,7 +84,9 @@ export default function Index() {
   const nextStart = nextPeriodStart(today);
   const dayInCycle = useMemo(() => {
     if (!lastStart) return null;
-    const diff = (differenceInCalendarDays(today, lastStart) % cycleLen + cycleLen) % cycleLen;
+    const diff =
+      ((differenceInCalendarDays(today, lastStart) % cycleLen) + cycleLen) %
+      cycleLen;
     return diff + 1; // 1-indexed
   }, [lastStart, today, cycleLen]);
 
@@ -118,13 +153,21 @@ export default function Index() {
       <section className="container py-10">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-600 via-fuchsia-600 to-violet-600">Gentle tracking. Real support.</h1>
-            <p className="text-muted-foreground mt-2 max-w-prose">A minimalist period tracker for women and teens. Log cramps, understand your cycle phases, and chat for tips—calm, clear, and kind.</p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-600 via-fuchsia-600 to-violet-600">
+              Gentle tracking. Real support.
+            </h1>
+            <p className="text-muted-foreground mt-2 max-w-prose">
+              A minimalist period tracker for women and teens. Log cramps,
+              understand your cycle phases, and chat for tips—calm, clear, and
+              kind.
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="secondary" className="whitespace-nowrap"><CalendarDays className="mr-2" /> Set last period</Button>
+                <Button variant="secondary" className="whitespace-nowrap">
+                  <CalendarDays className="mr-2" /> Set last period
+                </Button>
               </PopoverTrigger>
               <PopoverContent className="p-2" align="end">
                 <DayPickerCalendar
@@ -140,7 +183,9 @@ export default function Index() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           <Card className="lg:col-span-1">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Heart className="text-rose-500" /> Today's cycle</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="text-rose-500" /> Today's cycle
+              </CardTitle>
               <CardDescription>Your personalized snapshot</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -149,21 +194,47 @@ export default function Index() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-3xl font-bold">Day {dayInCycle}</div>
-                      <div className={cn("inline-flex items-center px-2 py-1 rounded-full text-xs font-medium", phase === "Period" && "bg-rose-100 text-rose-700", phase === "Follicular" && "bg-teal-100 text-teal-800", phase === "Ovulation" && "bg-violet-100 text-violet-800", phase === "Luteal" && "bg-amber-100 text-amber-800")}>{phase}</div>
+                      <div
+                        className={cn(
+                          "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
+                          phase === "Period" && "bg-rose-100 text-rose-700",
+                          phase === "Follicular" && "bg-teal-100 text-teal-800",
+                          phase === "Ovulation" &&
+                            "bg-violet-100 text-violet-800",
+                          phase === "Luteal" && "bg-amber-100 text-amber-800",
+                        )}
+                      >
+                        {phase}
+                      </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-muted-foreground">Next period</div>
-                      <div className="font-medium">{nextStart ? format(nextStart, "MMM d") : "TBD"}</div>
+                      <div className="text-sm text-muted-foreground">
+                        Next period
+                      </div>
+                      <div className="font-medium">
+                        {nextStart ? format(nextStart, "MMM d") : "TBD"}
+                      </div>
                     </div>
                   </div>
                   <div className="rounded-xl bg-gradient-to-br from-rose-100/70 via-fuchsia-100/70 to-violet-100/70 p-4">
                     <div className="text-sm text-muted-foreground">Tip</div>
-                    <div className="text-sm flex items-start gap-2"><Sparkles className="mt-0.5 size-4 text-rose-500" /> {phase === "Period" ? "Go gentle—hydration and warmth can help cramps." : phase === "Follicular" ? "Energy often rises here—walks or light workouts can feel great." : phase === "Ovulation" ? "Focus on protein and water today." : "Prioritize rest and steady snacks—your body is doing a lot."}</div>
+                    <div className="text-sm flex items-start gap-2">
+                      <Sparkles className="mt-0.5 size-4 text-rose-500" />{" "}
+                      {phase === "Period"
+                        ? "Go gentle—hydration and warmth can help cramps."
+                        : phase === "Follicular"
+                          ? "Energy often rises here—walks or light workouts can feel great."
+                          : phase === "Ovulation"
+                            ? "Focus on protein and water today."
+                            : "Prioritize rest and steady snacks—your body is doing a lot."}
+                    </div>
                   </div>
                 </>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-sm">Set your last period start date to begin tracking.</p>
+                  <p className="text-sm">
+                    Set your last period start date to begin tracking.
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -171,35 +242,79 @@ export default function Index() {
 
           <Card className="lg:col-span-1">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Droplets className="text-rose-500" /> Quick log</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Droplets className="text-rose-500" /> Quick log
+              </CardTitle>
               <CardDescription>Track today's cramps</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="cramps" className="text-sm">Cramps intensity</Label>
+                <Label htmlFor="cramps" className="text-sm">
+                  Cramps intensity
+                </Label>
                 <div className="flex items-center gap-3">
-                  <Slider id="cramps" min={0} max={3} step={1} value={[todayLog.cramps]} onValueChange={(v) => updateLog({ ...todayLog, cramps: v[0] ?? 0 })} className="max-w-xs" />
-                  <div className="text-sm text-muted-foreground w-20">{["None","Mild","Moderate","Strong"][todayLog.cramps]}</div>
+                  <Slider
+                    id="cramps"
+                    min={0}
+                    max={3}
+                    step={1}
+                    value={[todayLog.cramps]}
+                    onValueChange={(v) =>
+                      updateLog({ ...todayLog, cramps: v[0] ?? 0 })
+                    }
+                    className="max-w-xs"
+                  />
+                  <div className="text-sm text-muted-foreground w-20">
+                    {["None", "Mild", "Moderate", "Strong"][todayLog.cramps]}
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label>Cycle length</Label>
-                  <Input type="number" min={20} max={60} value={cycleLen} onChange={(e) => setSettings({ ...settings, cycleLength: Number(e.target.value || 0) })} />
+                  <Input
+                    type="number"
+                    min={20}
+                    max={60}
+                    value={cycleLen}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        cycleLength: Number(e.target.value || 0),
+                      })
+                    }
+                  />
                 </div>
                 <div>
                   <Label>Period days</Label>
-                  <Input type="number" min={2} max={10} value={periodLen} onChange={(e) => setSettings({ ...settings, periodLength: Number(e.target.value || 0) })} />
+                  <Input
+                    type="number"
+                    min={2}
+                    max={10}
+                    value={periodLen}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        periodLength: Number(e.target.value || 0),
+                      })
+                    }
+                  />
                 </div>
               </div>
-              <Button onClick={() => updateLog(todayLog)} className="w-full">Save today</Button>
+              <Button onClick={() => updateLog(todayLog)} className="w-full">
+                Save today
+              </Button>
             </CardContent>
           </Card>
 
           <Card className="lg:col-span-1">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><CalendarDays className="text-rose-500" /> Calendar</CardTitle>
-              <CardDescription>Predicted periods & fertile window</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <CalendarDays className="text-rose-500" /> Calendar
+              </CardTitle>
+              <CardDescription>
+                Predicted periods & fertile window
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <DayPickerCalendar
@@ -214,9 +329,16 @@ export default function Index() {
                 }}
               />
               <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                <span className="inline-flex items-center gap-1"><span className="size-3 rounded-full bg-rose-300" /> Period</span>
-                <span className="inline-flex items-center gap-1"><span className="size-3 rounded-full bg-violet-400" /> Ovulation</span>
-                <span className="inline-flex items-center gap-1"><span className="size-3 rounded-full bg-teal-300" /> Fertile</span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="size-3 rounded-full bg-rose-300" /> Period
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="size-3 rounded-full bg-violet-400" />{" "}
+                  Ovulation
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="size-3 rounded-full bg-teal-300" /> Fertile
+                </span>
               </div>
             </CardContent>
           </Card>
